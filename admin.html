@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Casino Royal</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">Casino Royal - Admin</div>
+            <nav class="navigation">
+                <a href="#" id="users-link">Usuarios</a>
+                <a href="#" id="payments-link">Pagos</a>
+                <a href="#" id="stats-link">Estadísticas</a>
+                <a href="#" id="logout-link">Cerrar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- User Management Section -->
+        <section id="users-section">
+            <h1>Gestión de Usuarios</h1>
+            <table id="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Balance</th>
+                        <th>Giros Ruleta</th>
+                        <th>Giros Frutas</th>
+                        <th>Lanzamientos Dados</th>
+                        <th>Admin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <!-- Payment Approval Section -->
+        <section id="payments-section" style="display: none;">
+            <h1>Gestión de Pagos</h1>
+            <table id="payments-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Correo</th>
+                        <th>Juego</th>
+                        <th>Cantidad</th>
+                        <th>Premio</th>
+                        <th>Estado</th>
+                        <th>Comprobante</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <!-- Statistics Section -->
+        <section id="stats-section" style="display: none;">
+            <h1>Estadísticas del Sistema</h1>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Usuarios</h3>
+                    <p id="total-users">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Apuestas Totales</h3>
+                    <p id="total-bets">$0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Ganancias Totales</h3>
+                    <p id="total-winnings">$0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Giros Ruleta</h3>
+                    <p id="total-roulette-spins">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Giros Frutas</h3>
+                    <p id="total-fruit-spins">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Lanzamientos Dados</h3>
+                    <p id="total-dice-rolls">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Pagos</h3>
+                    <p id="total-payments">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Pagos Pendientes</h3>
+                    <p id="pending-payments">0</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Credit Assignment Section -->
+    <section id="assign-credit-section" style="display: none;">
+        <h1>Asignar Fichas Manualmente</h1>
+        <div class="window" style="background-color:#c0c0c0;padding:20px;border:2px outset white;max-width:400px;margin:auto;">
+            <div class="title-bar" style="background:navy;color:white;padding:4px;font-weight:bold;margin-bottom:10px;">
+                🎩 Panel Asignación de Fichas
+            </div>
+
+            <label for="nickname">Buscar usuario</label>
+            <input type="text" id="nickname" placeholder="ej: javoplayer123" />
+            <button onclick="buscarUsuario()">Buscar</button>
+
+            <div id="info" class="info" style="display:none;background:#e0e0e0;padding:10px;margin-top:10px;border:2px inset #999;">
+                <p><strong>Nombre:</strong> <span id="nombre"></span></p>
+                <p><strong>Correo:</strong> <span id="correo"></span></p>
+                <p><strong>Fichas actuales:</strong> <span id="fichas"></span></p>
+
+                <label for="monto">Monto a agregar</label>
+                <input type="number" id="monto" />
+
+                <label for="codigo">Código transferencia</label>
+                <input type="text" id="codigo" placeholder="TRANS-1234" />
+
+                <button onclick="asignarFichas()">Asignar Fichas</button>
+            </div>
+
+            <p id="estado"></p>
+        </div>
+    </section>
+    <footer>
+        <p>© 2025 JA-VO Casino Royal - Panel de Administración</p>
+    </footer>
+
+    <script src="admin.js"></script>
+</body>
+</html>

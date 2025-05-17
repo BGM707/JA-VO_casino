@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Golpea al Topo</title>
+    <!-- Importamos Bootstrap desde CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Importamos Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Importamos animate.css para animaciones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <!-- Estilos locales -->
+    <link rel="stylesheet" href="styles_topo.css">
+</head>
+<body>
+    <div class="hammer" id="hammer"></div>
+    <div class="jackpot-alert animate__animated animate__zoomIn" id="jackpotAlert">
+        ¡¡¡JACKPOT!!!
+    </div>
+    
+    <div class="casino-header text-center mb-4">
+        <h1 class="casino-title">
+            <i class="fas fa-gem me-2"></i> CASINO TOPO DE ORO <i class="fas fa-gem ms-2"></i>
+        </h1>
+        <p class="lead mb-0">
+            Golpea los topos y encuentra el que esconde el oro
+            <br>
+            <span class="golden-text">1 en 1000</span> posibilidades de ganar
+        </p>
+    </div>
+    
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="scoreboard p-3 mb-4">
+                    <h4 class="text-center">
+                        <i class="fas fa-coins coin"></i> Estadísticas
+                    </h4>
+                    <div class="stats-box">
+                        <p class="mb-2">
+                            <i class="fas fa-hammer me-2"></i> Golpes: 
+                            <span id="hitCount" class="float-end">0</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fas fa-skull-crossbones me-2"></i> Topos eliminados: 
+                            <span id="moleCount" class="float-end">0</span>
+                        </p>
+                        <p class="mb-0">
+                            <i class="fas fa-percentage me-2"></i> Probabilidad actual: 
+                            <span id="winProbability" class="float-end">1 en 1000</span>
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <button id="startBtn" class="btn btn-custom">
+                            <i class="fas fa-play me-2"></i> Iniciar juego
+                        </button>
+                        <button id="resetBtn" class="btn btn-custom" disabled>
+                            <i class="fas fa-redo-alt me-2"></i> Reiniciar
+                        </button>
+                    </div>
+                    
+                    <div class="probability-display text-center mt-3">
+                        <p>Encuentra el topo de oro para ganar el premio.</p>
+                        <p class="mb-0">Cada topo eliminado aumenta tus posibilidades.</p>
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <button id="helpBtn" class="btn btn-custom">
+                        <i class="fas fa-question-circle me-2"></i> Cómo jugar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="game-container">
+                    <h3 class="text-center mb-3">
+                        <i class="fas fa-gavel me-2"></i> Golpea al Topo
+                    </h3>
+                    <div id="moleGrid" class="mole-grid">
+                        <!-- Las celdas de topos se generarán dinámicamente con JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Premio -->
+    <div class="modal fade" id="winModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title golden-text">
+                        <i class="fas fa-trophy me-2"></i> ¡HAS GANADO!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="animate__animated animate__tada">
+                        <i class="fas fa-crown golden-text display-1 mb-4"></i>
+                    </div>
+                    <h4>¡Felicidades! Has encontrado el topo de oro.</h4>
+                    <p>Probabilidad vencida: <span id="finalProbability">1 en 1000</span></p>
+                    <p>Número de golpes: <span id="finalHits">0</span></p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal" id="playAgainBtn">
+                        <i class="fas fa-sync-alt me-2"></i> Jugar de nuevo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Ayuda -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-question-circle me-2"></i> Cómo jugar
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h6><i class="fas fa-bullseye me-2 golden-text"></i> Objetivo:</h6>
+                        <p>Encuentra el topo de oro entre todos los topos. Solo uno esconde el tesoro y tienes 1 posibilidad en 1000 de encontrarlo inicialmente.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6><i class="fas fa-gamepad me-2 golden-text"></i> Cómo jugar:</h6>
+                        <ol>
+                            <li>Haz clic en "Iniciar juego" para comenzar.</li>
+                            <li>Golpea cualquier topo haciendo clic en él.</li>
+                            <li>Si el topo tiene el oro, ¡ganas! Si no, sigue intentando.</li>
+                            <li>Con cada topo eliminado, aumenta tu probabilidad de encontrar el oro.</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h6><i class="fas fa-percentage me-2 golden-text"></i> Probabilidades:</h6>
+                        <p>Al inicio, la probabilidad de ganar es 1 en 1000. Cada vez que eliminas un topo sin oro, tus posibilidades mejoran.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="script_topo.js"></script>
+</body>
+</html>

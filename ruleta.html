@@ -1,0 +1,580 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frutillita - Juego de Casino</title>
+    <style>
+        :root {
+            --primary: #ff4081;
+            --secondary: #7c4dff;
+            --background: #1e1e2e;
+            --card: #2d2d42;
+            --text: #ffffff;
+            --gold: #ffd700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        .back-button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #6a3de8;
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .game-container {
+            background-color: var(--card);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .slot-machine {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .reel {
+            background-color: #ffffff;
+            border-radius: 10px;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .reel-container {
+            position: absolute;
+            width: 100%;
+            transition: top 3s cubic-bezier(0.21, 0.53, 0.29, 0.99);
+        }
+
+        .fruit {
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+        }
+
+        .strawberry { color: #ff4081; }
+        .apple { color: #f44336; }
+        .orange { color: #ff9800; }
+        .lemon { color: #ffeb3b; }
+        .grapes { color: #9c27b0; }
+        .watermelon { color: #4caf50; }
+        .cherry { color: #d32f2f; }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .spin-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+        }
+
+        .spin-button:hover {
+            background-color: #e91e63;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
+        }
+
+        .spin-button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chips-container {
+            background-color: var(--secondary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chips-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .chips-value {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bet-button {
+            background-color: var(--card);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bet-button:hover {
+            background-color: #3f3f5f;
+        }
+
+        .bet-amount {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 80px;
+            text-align: center;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 50px;
+            color: var(--gold);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .jackpot-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        @keyframes confetti {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--gold);
+            border-radius: 50%;
+        }
+
+        footer {
+            background-color: var(--card);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Media queries for responsive design */
+        @media (max-width: 768px) {
+            .slot-machine {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+            }
+
+            .reel {
+                height: 150px;
+            }
+
+            .fruit {
+                height: 150px;
+                font-size: 3.5rem;
+            }
+
+            .controls {
+                gap: 1rem;
+            }
+
+            .spin-button {
+                padding: 0.8rem 2rem;
+                font-size: 1rem;
+            }
+
+            .chips-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .game-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-strawberry"></i> Frutillita
+        </div>
+        <button class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <div class="slot-machine">
+                <div class="reel" id="reel1">
+                    <div class="reel-container" id="reelContainer1"></div>
+                </div>
+                <div class="reel" id="reel2">
+                    <div class="reel-container" id="reelContainer2"></div>
+                </div>
+                <div class="reel" id="reel3">
+                    <div class="reel-container" id="reelContainer3"></div>
+                </div>
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <div class="controls">
+                <button class="spin-button" id="spinButton">
+                    <i class="fas fa-play"></i> GIRAR
+                </button>
+
+                <div class="chips-container">
+                    <div class="chips-display">
+                        <i class="fas fa-coins" style="color: var(--gold);"></i>
+                        Fichas: <span class="chips-value" id="chipsValue">1000</span>
+                    </div>
+                    <div class="bet-controls">
+                        <button class="bet-button" id="decreaseBet">-</button>
+                        <div class="bet-amount" id="betAmount">10</div>
+                        <button class="bet-button" id="increaseBet">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="jackpot-animation" id="jackpotAnimation"></div>
+
+    <footer>
+        <p>© 2025 Frutillita - Juego de Casino | Solo para fines de entretenimiento</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos del DOM
+            const reelContainer1 = document.getElementById('reelContainer1');
+            const reelContainer2 = document.getElementById('reelContainer2');
+            const reelContainer3 = document.getElementById('reelContainer3');
+            const spinButton = document.getElementById('spinButton');
+            const chipsValue = document.getElementById('chipsValue');
+            const betAmount = document.getElementById('betAmount');
+            const decreaseBet = document.getElementById('decreaseBet');
+            const increaseBet = document.getElementById('increaseBet');
+            const message = document.getElementById('message');
+            const backButton = document.getElementById('backButton');
+            const jackpotAnimation = document.getElementById('jackpotAnimation');
+
+            // Configuración del juego
+            let chips = 1000;
+            let bet = 10;
+            let isSpinning = false;
+            
+            // Lista de frutas con sus emojis y clases
+            const fruits = [
+                { emoji: '🍓', class: 'strawberry', value: 5 },  // Frutillita (especial)
+                { emoji: '🍎', class: 'apple', value: 2 },
+                { emoji: '🍊', class: 'orange', value: 2 },
+                { emoji: '🍋', class: 'lemon', value: 3 },
+                { emoji: '🍇', class: 'grapes', value: 3 },
+                { emoji: '🍉', class: 'watermelon', value: 4 },
+                { emoji: '🍒', class: 'cherry', value: 4 }
+            ];
+
+            // Inicializa los carretes
+            initReels();
+
+            // Manejador de eventos para el botón de girar
+            spinButton.addEventListener('click', spinReels);
+
+            // Manejadores para los botones de apuesta
+            decreaseBet.addEventListener('click', () => {
+                if (bet > 10 && !isSpinning) {
+                    bet -= 10;
+                    betAmount.textContent = bet;
+                }
+            });
+
+            increaseBet.addEventListener('click', () => {
+                if (bet < chips && !isSpinning) {
+                    bet += 10;
+                    betAmount.textContent = bet;
+                }
+            });
+
+            // Manejador para el botón de volver
+            backButton.addEventListener('click', () => {
+                alert('¡Gracias por jugar a Frutillita!, este botón te llevaría al menú principal.');
+            });
+
+            // Inicializa los carretes con frutas
+            function initReels() {
+                [reelContainer1, reelContainer2, reelContainer3].forEach(reel => {
+                    reel.innerHTML = '';
+                    // Creamos múltiples conjuntos de frutas para el efecto de giro
+                    for (let i = 0; i < 5; i++) {
+                        fruits.forEach(fruit => {
+                            const fruitElement = document.createElement('div');
+                            fruitElement.classList.add('fruit', fruit.class);
+                            fruitElement.textContent = fruit.emoji;
+                            fruitElement.dataset.value = fruit.value;
+                            reel.appendChild(fruitElement);
+                        });
+                    }
+                    // Posicionamos al inicio
+                    reel.style.top = '0px';
+                });
+            }
+
+            // Función para girar los carretes
+            function spinReels() {
+                if (isSpinning || chips < bet) return;
+                
+                isSpinning = true;
+                spinButton.disabled = true;
+                
+                // Deducir apuesta
+                chips -= bet;
+                chipsValue.textContent = chips;
+                
+                // Limpiar mensaje anterior
+                message.textContent = '';
+
+                // Altura de cada fruta (200px por defecto, 150px en móvil)
+                const fruitHeight = window.innerWidth <= 768 ? 150 : 200;
+                
+                // Generar posiciones finales aleatorias para cada carrete
+                const stopPositions = [
+                    Math.floor(Math.random() * fruits.length),
+                    Math.floor(Math.random() * fruits.length),
+                    Math.floor(Math.random() * fruits.length)
+                ];
+                
+                // Calcular las posiciones de parada (en píxeles)
+                const finalPositions = stopPositions.map(pos => -(pos * fruitHeight));
+                
+                // Animar los carretes
+                setTimeout(() => animateReel(reelContainer1, finalPositions[0]), 0);
+                setTimeout(() => animateReel(reelContainer2, finalPositions[1]), 250);
+                setTimeout(() => animateReel(reelContainer3, finalPositions[2]), 500);
+                
+                // Verificar resultados después de que todos los carretes se detengan
+                setTimeout(() => {
+                    checkResults(stopPositions);
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                }, 4000);
+            }
+
+            // Función para animar un carrete
+            function animateReel(reel, finalPosition) {
+                // Multiplicamos por 5 para simular varias vueltas
+                const initialPosition = -5 * fruits.length * (window.innerWidth <= 768 ? 150 : 200);
+                reel.style.top = `${initialPosition}px`;
+                
+                // Usar setTimeout para asegurar que la transición funcione
+                setTimeout(() => {
+                    reel.style.top = `${finalPosition}px`;
+                }, 50);
+            }
+
+            // Función para verificar los resultados
+            function checkResults(positions) {
+                // Obtener los índices reales de las frutas visibles
+                const visibleFruits = positions.map(pos => pos % fruits.length);
+                
+                // Verificar si hay tres iguales
+                const allEqual = visibleFruits.every(val => val === visibleFruits[0]);
+                
+                // Verificar si hay tres frutillitas (índice 0)
+                const allStrawberries = visibleFruits.every(val => val === 0);
+                
+                // Verificar si hay al menos una frutillita
+                const hasStrawberry = visibleFruits.includes(0);
+                
+                // Calcular ganancias
+                let winnings = 0;
+                
+                if (allStrawberries) {
+                    // Jackpot - Tres frutillitas
+                    winnings = bet * 50;
+                    message.textContent = `¡JACKPOT! ¡Ganaste ${winnings} fichas!`;
+                    createJackpotAnimation();
+                } else if (allEqual) {
+                    // Tres frutas iguales
+                    const fruitValue = fruits[visibleFruits[0]].value;
+                    winnings = bet * fruitValue * 3;
+                    message.textContent = `¡Tres iguales! ¡Ganaste ${winnings} fichas!`;
+                } else if (hasStrawberry) {
+                    // Al menos una frutillita
+                    const strawberryCount = visibleFruits.filter(val => val === 0).length;
+                    winnings = bet * strawberryCount * 2;
+                    message.textContent = `¡${strawberryCount} Frutillita${strawberryCount > 1 ? 's' : ''}! ¡Ganaste ${winnings} fichas!`;
+                } else {
+                    message.textContent = 'Inténtalo de nuevo';
+                }
+                
+                if (winnings > 0) {
+                    chips += winnings;
+                    chipsValue.textContent = chips;
+                    
+                    // Añadir efecto de destello a las fichas
+                    chipsValue.style.transition = 'color 0.2s';
+                    chipsValue.style.color = 'white';
+                    setTimeout(() => {
+                        chipsValue.style.color = 'var(--gold)';
+                    }, 300);
+                }
+                
+                // Verificar si el jugador se quedó sin fichas
+                if (chips === 0) {
+                    setTimeout(() => {
+                        alert('¡Te has quedado sin fichas! Reiniciando el juego.');
+                        chips = 1000;
+                        chipsValue.textContent = chips;
+                    }, 1000);
+                }
+            }
+
+            // Función para crear la animación de jackpot
+            function createJackpotAnimation() {
+                jackpotAnimation.innerHTML = '';
+                jackpotAnimation.style.opacity = '1';
+                
+                // Crear partículas de confeti
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    
+                    // Posición aleatoria
+                    confetti.style.left = `${Math.random() * 100}%`;
+                    
+                    // Color aleatorio entre oro, rosa y púrpura
+                    const colors = ['#ffd700', '#ff4081', '#7c4dff'];
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    // Tamaño aleatorio
+                    const size = Math.random() * 15 + 5;
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    
+                    // Animación
+                    confetti.style.animation = `confetti ${Math.random() * 3 + 2}s linear forwards`;
+                    confetti.style.animationDelay = `${Math.random() * 3}s`;
+                    
+                    jackpotAnimation.appendChild(confetti);
+                }
+                
+                // Ocultar la animación después de 5 segundos
+                setTimeout(() => {
+                    jackpotAnimation.style.opacity = '0';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

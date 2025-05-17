@@ -1,0 +1,586 @@
+Juego, Rocket
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Rocket Game</title>
+    <!-- Importando CDN para estilos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <!-- SweetAlert CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.12/sweetalert2.all.min.js"></script>
+    <style>
+        :root {
+            --casino-gold: #e5b80b;
+            --casino-red: #e71d36;
+            --casino-black: #1a1a1a;
+            --casino-green: #2ecc71;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--casino-black);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
+                              url('/api/placeholder/400/320');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 1s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .jackpot-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--casino-gold);
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--casino-gold);
+            z-index: 100;
+        }
+        
+        .jackpot-title {
+            font-size: 24px;
+            margin: 0;
+            color: var(--casino-gold);
+            text-shadow: 0 0 10px var(--casino-gold);
+        }
+        
+        .jackpot-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: white;
+            text-shadow: 0 0 10px var(--casino-gold);
+        }
+        
+        .rocket-container {
+            position: relative;
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        .rocket {
+            position: absolute;
+            bottom: 100px;
+            width: 50px;
+            height: 120px;
+            transition: bottom 3s, transform 3s;
+            cursor: pointer;
+            z-index: 20;
+        }
+        
+        .rocket-body {
+            width: 100%;
+            height: 80px;
+            background-color: #e71d36;
+            border-radius: 10px 10px 0 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rocket-window {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #a8dadc;
+            border-radius: 50%;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid white;
+        }
+        
+        .rocket-bottom {
+            width: 100%;
+            height: 20px;
+            background-color: #457b9d;
+            position: relative;
+        }
+        
+        .rocket-fins {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 30px;
+            background-color: #e63946;
+        }
+        
+        .fin-left {
+            left: -15px;
+            transform: skew(30deg);
+        }
+        
+        .fin-right {
+            right: -15px;
+            transform: skew(-30deg);
+        }
+        
+        .rocket-fire {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(to bottom, #f39c12, #e74c3c);
+            border-radius: 0 0 15px 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .launch-btn {
+            position: absolute;
+            bottom: 30px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: var(--casino-red);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 30;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .launch-btn:hover {
+            background-color: #c41225;
+            transform: scale(1.05);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .launch-pad {
+            position: absolute;
+            bottom: 0;
+            width: 200px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 10px 10px 0 0;
+            z-index: 5;
+        }
+        
+        .explosion {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f39c12, #e74c3c, #c0392b);
+            transform: scale(0);
+            opacity: 0;
+            z-index: 25;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .control-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--casino-gold);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .bet-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .bet-control button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--casino-gold);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .bet-amount {
+            font-size: 18px;
+            color: white;
+        }
+        
+        .balance {
+            font-size: 16px;
+            color: var(--casino-green);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--casino-gold);
+            opacity: 0;
+            z-index: 30;
+        }
+        
+        /* Estilos para SweetAlert */
+        .swal2-popup {
+            background-color: var(--casino-black) !important;
+            border: 3px solid var(--casino-gold) !important;
+        }
+        
+        .swal2-title, .swal2-content {
+            color: white !important;
+        }
+        
+        .swal2-confirm {
+            background-color: var(--casino-red) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    
+    <div class="jackpot-container">
+        <h2 class="jackpot-title">JACKPOT</h2>
+        <div class="jackpot-amount" id="jackpot">$10,000</div>
+    </div>
+    
+    <div class="rocket-container">
+        <div class="explosion" id="explosion"></div>
+        <div class="rocket" id="rocket">
+            <div class="rocket-body">
+                <div class="rocket-window"></div>
+            </div>
+            <div class="rocket-bottom">
+                <div class="rocket-fins fin-left"></div>
+                <div class="rocket-fins fin-right"></div>
+            </div>
+            <div class="rocket-fire" id="rocket-fire"></div>
+        </div>
+        <div class="launch-pad"></div>
+    </div>
+    
+    <button class="launch-btn" id="launch-btn">LANZAR COHETE</button>
+    
+    <div class="control-panel">
+        <div class="balance" id="balance">Saldo: $1,000</div>
+        <div class="bet-control">
+            <button id="decrease-bet">-</button>
+            <div class="bet-amount" id="bet-amount">$50</div>
+            <button id="increase-bet">+</button>
+        </div>
+    </div>
+
+    <script>
+        // Crear estrellas para el fondo
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+        }
+        
+        // Variables del juego
+        let balance = 1000;
+        let betAmount = 50;
+        let jackpotAmount = 10000;
+        let isRocketLaunched = false;
+        let canClick = false;
+        let multiplier = 1.0;
+        let gameInterval;
+        let rocketHeight = 100;
+        
+        // Elementos del DOM
+        const rocket = document.getElementById('rocket');
+        const rocketFire = document.getElementById('rocket-fire');
+        const launchBtn = document.getElementById('launch-btn');
+        const explosion = document.getElementById('explosion');
+        const balanceEl = document.getElementById('balance');
+        const betAmountEl = document.getElementById('bet-amount');
+        const jackpotEl = document.getElementById('jackpot');
+        const decreaseBetBtn = document.getElementById('decrease-bet');
+        const increaseBetBtn = document.getElementById('increase-bet');
+        
+        // Actualizar visualización
+        function updateDisplay() {
+            balanceEl.textContent = `Saldo: $${balance}`;
+            betAmountEl.textContent = `$${betAmount}`;
+            jackpotEl.textContent = `$${jackpotAmount}`;
+        }
+        
+        // Control de apuestas
+        decreaseBetBtn.addEventListener('click', () => {
+            if (betAmount > 10) {
+                betAmount -= 10;
+                updateDisplay();
+            }
+        });
+        
+        increaseBetBtn.addEventListener('click', () => {
+            if (betAmount < balance) {
+                betAmount += 10;
+                updateDisplay();
+            } else {
+                Swal.fire({
+                    title: '¡Atención!',
+                    text: 'No tienes suficiente saldo para aumentar la apuesta',
+                    icon: 'warning',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+        
+        // Lanzar cohete
+        launchBtn.addEventListener('click', () => {
+            if (isRocketLaunched) return;
+            
+            if (balance < betAmount) {
+                Swal.fire({
+                    title: '¡Sin fondos!',
+                    text: 'No tienes suficiente saldo para realizar esta apuesta',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            
+            // Deducir la apuesta del saldo
+            balance -= betAmount;
+            updateDisplay();
+            
+            // Iniciar lanzamiento
+            isRocketLaunched = true;
+            canClick = true;
+            multiplier = 1.0;
+            
+            Swal.fire({
+                title: '¡Cohete lanzado!',
+                text: 'Haz clic para retirar antes de que explote',
+                icon: 'info',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            // Animar cohete
+            rocketFire.style.opacity = '1';
+            
+            // Comenzar a aumentar la altura del cohete
+            gameInterval = setInterval(() => {
+                rocketHeight += 5;
+                multiplier += 0.05;
+                rocket.style.bottom = `${rocketHeight}px`;
+                
+                // Probabilidad de explosión que aumenta con el tiempo
+                const explosionChance = Math.random() * 100;
+                
+                if (explosionChance < multiplier / 10) {
+                    explodeRocket();
+                }
+                
+            }, 100);
+            
+            // Deshabilitar botón de lanzamiento durante el juego
+            launchBtn.disabled = true;
+            launchBtn.style.opacity = '0.5';
+        });
+        
+        // Clic en el cohete para retirar
+        rocket.addEventListener('click', () => {
+            if (!canClick || !isRocketLaunched) return;
+            
+            // Detener el juego
+            clearInterval(gameInterval);
+            canClick = false;
+            
+            // Calcular ganancias
+            const winnings = Math.floor(betAmount * multiplier);
+            balance += winnings;
+            updateDisplay();
+            
+            // Mostrar mensaje de éxito
+            Swal.fire({
+                title: '¡Retirada exitosa!',
+                text: `Has ganado $${winnings} (${multiplier.toFixed(2)}x)`,
+                icon: 'success',
+                confirmButtonText: 'Genial'
+            });
+            
+            // Resetear juego después de un tiempo
+            setTimeout(resetGame, 2000);
+        });
+        
+        // Función para la explosión del cohete
+        function explodeRocket() {
+            clearInterval(gameInterval);
+            canClick = false;
+            
+            // Animar explosión
+            explosion.style.left = `${rocket.offsetLeft - 75}px`;
+            explosion.style.top = `${window.innerHeight - rocketHeight - 150}px`;
+            explosion.style.transform = 'scale(1)';
+            explosion.style.opacity = '1';
+            
+            // Ocultar cohete
+            rocket.style.opacity = '0';
+            
+            // Mensaje de explosión
+            Swal.fire({
+                title: '¡BOOM!',
+                text: 'El cohete ha explotado. ¡Has perdido tu apuesta!',
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+            });
+            
+            // Aumentar jackpot con la apuesta perdida
+            jackpotAmount += betAmount;
+            updateDisplay();
+            
+            // Resetear juego después de un tiempo
+            setTimeout(resetGame, 3000);
+        }
+        
+        // Resetear el juego
+        function resetGame() {
+            isRocketLaunched = false;
+            rocketHeight = 100;
+            rocket.style.bottom = '100px';
+            rocket.style.opacity = '1';
+            rocketFire.style.opacity = '0';
+            explosion.style.transform = 'scale(0)';
+            explosion.style.opacity = '0';
+            
+            // Habilitar botón de lanzamiento
+            launchBtn.disabled = false;
+            launchBtn.style.opacity = '1';
+            
+            // Comprobar si el jugador se quedó sin saldo
+            if (balance <= 0) {
+                Swal.fire({
+                    title: '¡Sin fondos!',
+                    text: '¿Quieres recargar tu saldo?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, recargar $1000',
+                    cancelButtonText: 'No, gracias'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        balance = 1000;
+                        updateDisplay();
+                        Swal.fire({
+                            title: '¡Saldo recargado!',
+                            text: 'Has recargado $1000',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Función para ganar el jackpot (probabilidad muy baja)
+        function checkJackpot() {
+            const jackpotChance = Math.random() * 1000;
+            
+            if (jackpotChance < 1) {
+                // El jugador ha ganado el jackpot
+                Swal.fire({
+                    title: '¡JACKPOT!',
+                    text: `¡INCREÍBLE! Has ganado el JACKPOT de $${jackpotAmount}!`,
+                    icon: 'success',
+                    confirmButtonText: '¡RECOGER!'
+                });
+                
+                // Animar confeti
+                createConfetti();
+                
+                // Agregar jackpot al saldo
+                balance += jackpotAmount;
+                jackpotAmount = 10000; // Reiniciar jackpot
+                updateDisplay();
+            }
+        }
+        
+        // Crear efecto de confeti
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.top = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                document.body.appendChild(confetti);
+                
+                // Animar confeti
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 500}px) rotate(${Math.random() * 360}deg)`;
+                }, i * 10);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+        
+        // Inicializar
+        updateDisplay();
+        
+        // Mensaje de bienvenida
+        Swal.fire({
+            title: '¡Bienvenido al Casino Rocket!',
+            text: 'Apuesta, lanza el cohete y retírate antes de que explote para ganar',
+            icon: 'info',
+            confirmButtonText: 'Jugar'
+        });
+    </script>
+</body>
+</html>
+
+

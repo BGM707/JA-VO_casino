@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JA-VO Casino Royal - Juegos de Azar</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">JA-VO Casino Royal</div>
+            <nav class="navigation">
+                <a href="#" id="home-link">Inicio</a>
+                <a href="#" id="games-link">Juegos</a>
+                <a href="#" id="payment-link">Realizar Pago</a>
+                <a href="#" id="logout-link" style="display: none;">Cerrar Sesión</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sección de inicio -->
+        <section id="home-section">
+            <h1>Bienvenido al JA-VO Casino Royal</h1>
+            <p>Disfruta de nuestros emocionantes juegos y gana increíbles premios.</p>
+
+            <div class="login-form" id="login-form">
+                <h2>Ingresa a tu cuenta</h2>
+                <input type="text" id="login-username" placeholder="Usuario o correo electrónico" required>
+                <input type="password" id="login-password" placeholder="Contraseña" required>
+                <button id="login-button">Iniciar Sesión</button>
+                <p>¿No tienes cuenta? <a href="#" id="show-register" style="color: #e7a622;">Regístrate aquí</a></p>
+            </div>
+
+            <div class="login-form" id="register-form" style="display: none;">
+                <h2>Crea tu cuenta</h2>
+                <input type="text" id="register-username" placeholder="Nombre de usuario" required>
+                <input type="email" id="register-email" placeholder="Correo electrónico" required>
+                <input type="password" id="register-password" placeholder="Contraseña" required>
+                <button id="register-button">Registrarse</button>
+                <p>¿Ya tienes cuenta? <a href="#" id="show-login" style="color: #e7a622;">Inicia sesión</a></p>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <button id="guest-play-button" style="max-width: 200px;">Jugar como Invitado (Ruleta)</button>
+            </div>
+
+            <div class="game-container">
+                <div class="game-card">
+                    <div class="game-image">Ruleta</div>
+                    <div class="game-details">
+                        <h3>Ruleta de la Fortuna</h3>
+                        <p>Gira la ruleta y gana increíbles premios.</p>
+                        <button class="play-button" data-game="roulette">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Frutillas</div>
+                    <div class="game-details">
+                        <h3>Juego de Frutillas</h3>
+                        <p>Combina las frutas y llévate grandes premios.</p>
+                        <button class="play-button" data-game="fruits">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Dados</div>
+                    <div class="game-details">
+                        <h3>Dados de la Suerte</h3>
+                        <p>Lanza los dados y prueba tu suerte.</p>
+                        <button class="play-button" data-game="dice">Jugar Ahora</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Ruleta Invitado -->
+            <div class="game-layout" id="guest-roulette-layout" style="display: none;">
+                <h2>Ruleta de la Fortuna (Modo Invitado)</h2>
+                <p>Prueba la ruleta gratis. ¡Regístrate para jugar y ganar premios reales!</p>
+                <div class="roulette-container">
+                    <div class="roulette-wheel" id="guest-roulette-wheel"></div>
+                    <div class="roulette-marker"></div>
+                    <div class="roulette-center"></div>
+                </div>
+                <div class="roulette-controls">
+                    <h3>Balance: <span id="guest-roulette-balance">$10,000</span></h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px;">
+                        <button class="bet-button" data-amount="1000">$1,000</button>
+                        <button class="bet-button" data-amount="5000">$5,000</button>
+                        <button class="bet-button" data-amount="10000">$10,000</button>
+                    </div>
+                    <p>Apuesta actual: <span id="guest-current-bet">$1,000</span></p>
+                    <button id="guest-spin-roulette">Girar Ruleta</button>
+                    <p>Giros restantes: <span id="guest-roulette-spins">5</span></p>
+                </div>
+                <div class="game-results">
+                    <h3>Resultados anteriores:</h3>
+                    <div id="guest-roulette-results" style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de juegos -->
+        <section id="games-section" style="display: none;">
+            <h1>Nuestros Juegos</h1>
+            <div class="game-container">
+                <!-- Juegos originales -->
+                <div class="game-card">
+                    <div class="game-image">Ruleta</div>
+                    <div class="game-details">
+                        <h3>Ruleta de la Fortuna</h3>
+                        <p>Gira la ruleta y gana increíbles premios.</p>
+                        <button class="play-button" data-game="roulette">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Frutillas</div>
+                    <div class="game-details">
+                        <h3>Juego de Frutillas</h3>
+                        <p>Combina las frutas y llévate grandes premios.</p>
+                        <button class="play-button" data-game="fruits">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Dados</div>
+                    <div class="game-details">
+                        <h3>Dados de la Suerte</h3>
+                        <p>Lanza los dados y prueba tu suerte.</p>
+                        <button class="play-button" data-game="dice">Jugar Ahora</button>
+                    </div>
+                </div>
+                <!-- Nuevos juegos -->
+                <div class="game-card">
+                    <div class="game-image">Golpea al Topo</div>
+                    <div class="game-details">
+                        <h3>Golpea al Topo</h3>
+                        <p>¡Golpea a los topos que aparecen y acumula puntos!</p>
+                        <button class="play-button" data-game="mole">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Raspa y Gana</div>
+                    <div class="game-details">
+                        <h3>Raspa y Gana</h3>
+                        <p>Raspa los boletos y descubre premios instantáneos.</p>
+                        <button class="play-button" data-game="scratch">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Gato Millonario</div>
+                    <div class="game-details">
+                        <h3>Gato Millonario</h3>
+                        <p>Alinea los símbolos felinos para ganar grandes premios.</p>
+                        <button class="play-button" data-game="cat">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Ruleta de las Bendiciones</div>
+                    <div class="game-details">
+                        <h3>Ruleta de las Bendiciones</h3>
+                        <p>Gira la ruleta y recibe bendiciones con premios.</p>
+                        <button class="play-button" data-game="blessings">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Rocket Cohete</div>
+                    <div class="game-details">
+                        <h3>Rocket Cohete</h3>
+                        <p>Lanza el cohete y multiplica tus ganancias.</p>
+                        <button class="play-button" data-game="rocket">Jugar Ahora</button>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">Frutillitas</div>
+                    <div class="game-details">
+                        <h3>Frutillitas</h3>
+                        <p>Combina frutillas para obtener dulces premios.</p>
+                        <button class="play-button" data-game="strawberries">Jugar Ahora</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Ruleta -->
+            <div class="game-layout" id="roulette-layout" style="display: none;">
+                <h2>Ruleta de la Fortuna</h2>
+                <div class="roulette-container">
+                    <div class="roulette-wheel" id="roulette-wheel"></div>
+                    <div class="roulette-marker"></div>
+                    <div class="roulette-center"></div>
+                </div>
+                <div class="roulette-controls">
+                    <h3>Balance: <span id="roulette-balance">$0</span></h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px;">
+                        <button class="bet-button" data-amount="1000">$1,000</button>
+                        <button class="bet-button" data-amount="5000">$5,000</button>
+                        <button class="bet-button" data-amount="10000">$10,000</button>
+                    </div>
+                    <p>Apuesta actual: <span id="current-bet">$1,000</span></p>
+                    <button id="spin-roulette">Girar Ruleta</button>
+                    <p>Giros restantes: <span id="roulette-spins">5</span></p>
+                </div>
+                <div class="game-results">
+                    <h3>Resultados anteriores:</h3>
+                    <div id="roulette-results" style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Frutillas -->
+            <div class="game-layout" id="fruits-layout" style="display: none;">
+                <h2>Juego de Frutillas</h2>
+                <div class="fruit-machine">
+                    <div class="fruits-container">
+                        <div class="fruit-slot" id="fruit-slot-1">🍎</div>
+                        <div class="fruit-slot" id="fruit-slot-2">🍊</div>
+                        <div class="fruit-slot" id="fruit-slot-3">🍇</div>
+                    </div>
+                    <div class="fruit-controls">
+                        <h3>Balance: <span id="fruit-balance">$0</span></h3>
+                        <div class="fruit-bet">
+                            <button id="decrease-bet">-</button>
+                            <span id="fruit-bet-amount">$1,000</span>
+                            <button id="increase-bet">+</button>
+                        </div>
+                        <button id="spin-fruits">Girar Frutas</button>
+                        <p>Giros restantes: <span id="fruit-spins">5</span></p>
+                    </div>
+                </div>
+                <div class="prize-table">
+                    <h3>Tabla de Premios</h3>
+                    <table style="max-width: 500px; margin: 0 auto;">
+                        <tr><td>3 x 🍎</td><td>x10 tu apuesta</td></tr>
+                        <tr><td>3 x 🍊</td><td>x5 tu apuesta</td></tr>
+                        <tr><td>3 x 🍇</td><td>x3 tu apuesta</td></tr>
+                        <tr><td>3 x 🍒</td><td>x2 tu apuesta</td></tr>
+                        <tr><td>3 x 🍋</td><td>x1.5 tu apuesta</td></tr>
+                        <tr><td>Cualquier combinación</td><td>x0.5 tu apuesta</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Dados -->
+            <div class="game-layout" id="dice-layout" style="display: none;">
+                <h2>Dados de la Suerte</h2>
+                <div style="display: flex; justify-content: center; gap: 30px; margin: 30px 0;">
+                    <div id="dice-1" style="width: 100px; height: 100px; background-color: #e7a622; color: #000; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; border-radius: 15px;">1</div>
+                    <div id="dice-2" style="width: 100px; height: 100px; background-color: #e7a622; color: #000; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; border-radius: 15px;">1</div>
+                </div>
+                <div class="dice-controls">
+                    <h3>Balance: <span id="dice-balance">$0</span></h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin: 15px 0;">
+                        <button class="bet-button" data-amount="1000">$1,000</button>
+                        <button class="bet-button" data-amount="5000">$5,000</button>
+                        <button class="bet-button" data-amount="10000">$10,000</button>
+                    </div>
+                    <p>Apuesta actual: <span id="dice-current-bet">$1,000</span></p>
+                    <div style="margin: 20px 0;">
+                        <h3>Escoge tu apuesta:</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 600px; margin: 0 auto;">
+                            <button class="dice-bet-option" data-option="over7">Mayor a 7 (x2)</button>
+                            <button class="dice-bet-option" data-option="under7">Menor a 7 (x2)</button>
+                            <button class="dice-bet-option" data-option="exact7">Exactamente 7 (x4)</button>
+                            <button class="dice-bet-option" data-option="doubles">Dobles (x5)</button>
+                        </div>
+                    </div>
+                    <button id="roll-dice">Lanzar Dados</button>
+                    <p>Lanzamientos restantes: <span id="dice-rolls">5</span></p>
+                </div>
+                <div class="dice-history">
+                    <h3>Historial de lanzamientos:</h3>
+                    <div id="dice-results" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Golpea al Topo (Invitado) -->
+            <div class="game-layout" id="guest-mole-layout" style="display: none;">
+                <h2>Golpea al Topo (Modo Invitado)</h2>
+                <p>Prueba el juego gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="mole-container">
+                    <div class="mole-grid" style="display: grid; grid-template-columns: repeat(3, 100px); gap: 20px; justify-content: center;">
+                        <div class="mole-hole" id="mole-1"></div>
+                        <div class="mole-hole" id="mole-2"></div>
+                        <div class="mole-hole" id="mole-3"></div>
+                        <div class="mole-hole" id="mole-4"></div>
+                        <div class="mole-hole" id="mole-5"></div>
+                        <div class="mole-hole" id="mole-6"></div>
+                    </div>
+                </div>
+                <div class="mole-controls">
+                    <h3>Puntos: <span id="guest-mole-points">0</span></h3>
+                    <p>Tiempo restante: <span id="guest-mole-time">30</span> segundos</p>
+                    <button id="guest-start-mole">Iniciar Juego</button>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register-mole" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Raspa y Gana (Invitado) -->
+            <div class="game-layout" id="guest-scratch-layout" style="display: none;">
+                <h2>Raspa y Gana (Modo Invitado)</h2>
+                <p>Prueba el juego gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="scratch-container">
+                    <div class="scratch-card" style="width: 300px; height: 300px; background-color: #ccc; margin: 0 auto; position: relative;">
+                        <canvas id="guest-scratch-canvas" width="300" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="scratch-controls">
+                    <h3>Premio: <span id="guest-scratch-prize">?</span></h3>
+                    <button id="guest-scratch-ticket">Nuevo Boleto</button>
+                    <p>Boletos restantes: <span id="guest-scratch-tickets">3</span></p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register-scratch" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Gato Millonario (Invitado) -->
+            <div class="game-layout" id="guest-cat-layout" style="display: none;">
+                <h2>Gato Millonario (Modo Invitado)</h2>
+                <p>Prueba el juego gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="cat-container">
+                    <div class="cat-slots" style="display: flex; justify-content: center; gap: 20px;">
+                        <div class="cat-slot" id="cat-slot-1">😺</div>
+                        <div class="cat-slot" id="cat-slot-2">😸</div>
+                        <div class="cat-slot" id="cat-slot-3">😻</div>
+                    </div>
+                </div>
+                <div class="cat-controls">
+                    <h3>Balance: <span id="guest-cat-balance">$10,000</span></h3>
+                    <p>Apuesta actual: <span id="guest-cat-bet">$1,000</span></p>
+                    <button id="guest-spin-cat">Girar</button>
+                    <p>Giros restantes: <span id="guest-cat-spins">5</span></p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-regist-cat" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Ruleta de las Bendiciones (Invitado) -->
+            <div class="game-layout" id="guest-blessings-layout" style="display: none;">
+                <h2>Ruleta de las Bendiciones (Modo Invitado)</h2>
+                <p>Prueba la ruleta gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="roulette-container">
+                    <div class="roulette-wheel" id="guest-blessings-wheel"></div>
+                    <div class="roulette-marker"></div>
+                    <div class="roulette-center"></div>
+                </div>
+                <div class="roulette-controls">
+                    <h3>Balance: <span id="guest-blessings-balance">$10,000</span></h3>
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px;">
+                        <button class="bet-button" data-amount="1000">$1,000</button>
+                        <button class="bet-button" data-amount="5000">$5,000</button>
+                        <button class="bet-button" data-amount="10000">$10,000</button>
+                    </div>
+                    <p>Apuesta actual: <span id="guest-blessings-bet">$1,000</span></p>
+                    <button id="guest-spin-blessings">Girar Ruleta</button>
+                    <p>Giros restantes: <span id="guest-blessings-spins">5</span></p>
+                </div>
+                <div class="game-results">
+                    <h3>Resultados anteriores:</h3>
+                    <div id="guest-blessings-results" style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register-blessings" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Rocket Cohete (Invitado) -->
+            <div class="game-layout" id="guest-rocket-layout" style="display: none;">
+                <h2>Rocket Cohete (Modo Invitado)</h2>
+                <p>Prueba el juego gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="rocket-container">
+                    <div class="rocket-game" style="width: 300px; height: 400px; background-color: #333; margin: 0 auto; position: relative;">
+                        <div id="guest-rocket" style="width: 50px; height: 50px; background-color: #e7a622; position: absolute; bottom: 0; left: 125px;">🚀</div>
+                    </div>
+                </div>
+                <div class="rocket-controls">
+                    <h3>Multiplicador: <span id="guest-rocket-multiplier">1.0x</span></h3>
+                    <p>Apuesta actual: <span id="guest-rocket-bet">$1,000</span></p>
+                    <button id="guest-launch-rocket">Lanzar Cohete</button>
+                    <p>Intentos restantes: <span id="guest-rocket-attempts">3</span></p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register-rocket" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+
+            <!-- Layout de Juego: Frutillitas (Invitado) -->
+            <div class="game-layout" id="guest-strawberries-layout" style="display: none;">
+                <h2>Frutillitas (Modo Invitado)</h2>
+                <p>Prueba el juego gratis. ¡Regístrate para ganar premios reales!</p>
+                <div class="fruit-machine">
+                    <div class="fruits-container" style="display: flex; justify-content: center; gap: 20px;">
+                        <div class="fruit-slot" id="strawberry-slot-1">🍓</div>
+                        <div class="fruit-slot" id="strawberry-slot-2">🍓</div>
+                        <div class="fruit-slot" id="strawberry-slot-3">🍓</div>
+                    </div>
+                    <div class="fruit-controls">
+                        <h3>Balance: <span id="guest-strawberry-balance">$10,000</span></h3>
+                        <div class="fruit-bet">
+                            <button id="guest-decrease-strawberry-bet">-</button>
+                            <span id="guest-strawberry-bet-amount">$1,000</span>
+                            <button id="guest-increase-strawberry-bet">+</button>
+                        </div>
+                        <button id="guest-spin-strawberries">Girar Frutillitas</button>
+                        <p>Giros restantes: <span id="guest-strawberry-spins">5</span></p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="guest-to-register-strawberries" style="max-width: 200px;">¡Regístrate Ahora!</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de pago -->
+        <section id="payment-section" style="display: none;">
+            <h1>Realizar Pago</h1>
+            <div class="payment-form">
+                <h2>Información del Jugador</h2>
+                <input type="text" id="payment-name" placeholder="Nombre completo" required>
+                <input type="text" id="payment-rut" placeholder="RUT" required>
+                <input type="email" id="payment-email" placeholder="Correo electrónico" required>
+                <div class="game-select">
+                    <h3>Selecciona tu Juego</h3>
+                    <select id="game-select">
+                        <option value="">Selecciona un juego</option>
+                        <option value="roulette">Ruleta de la Fortuna</option>
+                        <option value="fruits">Juego de Frutillas</option>
+                        <option value="dice">Dados de la Suerte</option>
+                        <option value="mole">Golpea al Topo</option>
+                        <option value="scratch">Raspa y Gana</option>
+                        <option value="cat">Gato Millonario</option>
+                        <option value="blessings">Ruleta de las Bendiciones</option>
+                        <option value="rocket">Rocket Cohete</option>
+                        <option value="strawberries">Frutillitas</option>
+                    </select>
+                    <h3>Número de Giros/Juegos</h3>
+                    <input type="number" id="game-count" min="1" max="100" value="1">
+                    <h3>Selecciona el Premio</h3>
+                    <select id="prize-select">
+                        <option value="">Selecciona un premio</option>
+                        <option value="cash">Premio en Efectivo</option>
+                        <option value="points">Puntos de JA-VO Casino</option>
+                        <option value="free">Juegos Gratis</option>
+                    </select>
+                </div>
+                <h3>Comprobante de Transferencia</h3>
+                <div class="upload-area" id="upload-area">
+                    <p>Haz clic aquí para subir tu comprobante de transferencia</p>
+                    <p>O arrastra y suelta el archivo aquí</p>
+                </div>
+                <input type="file" id="transfer-receipt" style="display: none;">
+                <textarea id="payment-comments" placeholder="Comentarios adicionales (opcional)" rows="3"></textarea>
+                <div class="terms">
+                    <input type="checkbox" id="terms" style="width: auto; margin-right: 10px;">
+                    <label for="terms">Acepto los términos y condiciones</label>
+                </div>
+                <button id="submit-payment">Enviar Pago</button>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2025 JA-VO Casino Royal - Todos los derechos reservados</p>
+        <p>Juega con responsabilidad. Solo para mayores de 18 años.</p>
+    </footer>
+
+    <div class="modal-overlay" id="promo-modal">
+        <div class="modal">
+            <h2>¡FELICIDADES!</h2>
+            <p>Eres el jugador número <span id="random-player-number">0</span> y has ganado unos audífonos de última generación.</p>
+            <p style="color: #e7a622; font-weight: bold; font-size: 18px; margin: 20px 0;">OFERTA ESPECIAL</p>
+            <p>Si realizas un depósito de $10,000 ahora mismo, duplicaremos tu cupo en Javomonedas.</p>
+            <div class="modal-buttons">
+                <button id="accept-promo">¡Aprovechar oferta!</button>
+                <button id="close-modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para ocultar todas las secciones y layouts
+        function hideAllSectionsAndLayouts() {
+            document.querySelectorAll('section, .game-layout').forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+
+        // Mostrar la sección de inicio por defecto
+        document.getElementById('home-section').style.display = 'block';
+
+        // Navegación entre secciones principales
+        document.getElementById('home-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllSectionsAndLayouts();
+            document.getElementById('home-section').style.display = 'block';
+        });
+
+        document.getElementById('games-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllSectionsAndLayouts();
+            document.getElementById('games-section').style.display = 'block';
+        });
+
+        document.getElementById('payment-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            hideAllSectionsAndLayouts();
+            document.getElementById('payment-section').style.display = 'block';
+        });
+
+        // Botón "Jugar como Invitado (Ruleta)" en la sección de inicio
+        document.getElementById('guest-play-button').addEventListener('click', () => {
+            hideAllSectionsAndLayouts();
+            document.getElementById('guest-roulette-layout').style.display = 'block';
+        });
+
+        // Manejar los botones "Jugar Ahora" para mostrar el layout correspondiente
+        document.querySelectorAll('.play-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const game = button.getAttribute('data-game');
+                hideAllSectionsAndLayouts();
+                document.getElementById(`guest-${game}-layout`).style.display = 'block';
+            });
+        });
+
+        // Botones "Regístrate Ahora" para volver al formulario de registro
+        document.querySelectorAll('[id^="guest-to-register"]').forEach(button => {
+            button.addEventListener('click', () => {
+                hideAllSectionsAndLayouts();
+                document.getElementById('home-section').style.display = 'block';
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('register-form').style.display = 'block';
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

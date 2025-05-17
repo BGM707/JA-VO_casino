@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspa y Gana - Juego de Raspe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --background: #1a1a2e;
+            --card: #242444;
+            --text: #ffffff;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--gold);
+        }
+
+        .back-button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #3dbcb4;
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        .game-container {
+            background-color: var(--card);
+            border-radius: 15px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .scratch-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .scratch-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2/3;
+            background-color: var(--secondary);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .scratch-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .scratch-card-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary);
+            border-radius: 10px;
+            z-index: 1;
+        }
+
+        .scratch-card-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg, 
+                var(--primary), 
+                var(--primary) 10px, 
+                #ff8c8c 10px, 
+                #ff8c8c 20px
+            );
+            z-index: 2;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scratch-card-cover::before {
+            content: "RASPA AQUÍ";
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .scratch-card-content {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .scratch-card-prize {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 1.5rem;
+        }
+
+        .new-game-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .new-game-button:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .new-game-button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .chips-container {
+            background-color: var(--secondary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chips-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .chips-value {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .scratch-price {
+            background-color: var(--card);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 1.2rem;
+        }
+
+        .scratch-price span {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .instructions {
+            background-color: rgba(78, 205, 196, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .instructions h3 {
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .scratched-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        footer {
+            background-color: var(--card);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Estilos para premios */
+        .prize-gold {
+            color: var(--gold);
+        }
+
+        .prize-silver {
+            color: var(--silver);
+        }
+
+        .prize-bronze {
+            color: var(--bronze);
+        }
+
+        /* Media queries para diseño responsivo */
+        @media (max-width: 768px) {
+            .scratch-area {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .game-container {
+                padding: 1rem;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .chips-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .new-game-button {
+                padding: 0.8rem 2rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .scratch-area {
+                grid-template-columns: 1fr;
+                max-width: 250px;
+            }
+        }
+
+        /* Transición para revelar tarjeta completa */
+        .revealed {
+            transition: opacity 0.5s ease;
+            opacity: 0 !important;
+        }
+
+        /* Efecto de brillo para tarjetas */
+        @keyframes shine {
+            0% {
+                background-position: -100% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .shine-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.4) 50%, 
+                rgba(255, 255, 255, 0) 100%
+            );
+            background-size: 200% 100%;
+            animation: shine 2s infinite linear;
+            pointer-events: none;
+        }
+
+        /* Canvas para el efecto de raspe */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-ticket-alt"></i> Raspa y Gana
+        </div>
+        <button class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
+    </header>
+
+    <main>
+        <div class="game-container">
+            <h1 class="game-title">¡Raspa y Descubre Premios!</h1>
+            
+            <div class="scratch-area" id="scratchArea">
+                <!-- Las tarjetas se generan dinámicamente con JavaScript -->
+            </div>
+
+            <div class="instructions">
+                <h3>Cómo jugar</h3>
+                <p>Raspa las tarjetas manteniendo presionado el mouse (o tu dedo en dispositivos táctiles) y moviendo sobre la superficie para revelar los premios ocultos. ¡Consigue 3 símbolos iguales para ganar!</p>
+            </div>
+
+            <div class="controls">
+                <div class="chips-container">
+                    <div class="chips-display">
+                        <i class="fas fa-coins" style="color: var(--gold);"></i>
+                        Fichas: <span class="chips-value" id="chipsValue">1000</span>
+                    </div>
+                    <div class="scratch-price">
+                        Precio: <span>50</span> fichas
+                    </div>
+                </div>
+
+                <button class="new-game-button" id="newGameButton">
+                    <i class="fas fa-sync-alt"></i> NUEVO JUEGO
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Raspa y Gana | Solo para fines de entretenimiento</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elementos del DOM
+            const scratchArea = document.getElementById('scratchArea');
+            const newGameButton = document.getElementById('newGameButton');
+            const chipsValue = document.getElementById('chipsValue');
+            const backButton = document.getElementById('backButton');
+            
+            // Configuración del juego
+            let chips = 1000;
+            const scratchPrice = 50;
+            let cardsScratched = 0;
+            let gameActive = false;
+            let revealedPrizes = [];
+            
+            // Símbolos y premios
+            const symbols = [
+                { emoji: '💰', name: 'money', value: 2, class: 'prize-gold' },
+                { emoji: '💎', name: 'diamond', value: 5, class: 'prize-gold' },
+                { emoji: '🏆', name: 'trophy', value: 3, class: 'prize-silver' },
+                { emoji: '🎁', name: 'gift', value: 2, class: 'prize-bronze' },
+                { emoji: '🍀', name: 'clover', value: 4, class: 'prize-silver' },
+                { emoji: '🎰', name: 'jackpot', value: 10, class: 'prize-gold' }
+            ];
+            
+            // Inicializar el juego
+            initGame();
+
+            // Event listeners
+            newGameButton.addEventListener('click', startNewGame);
+            
+            backButton.addEventListener('click', () => {
+                swal({
+                    title: "¿Volver al menú?",
+                    text: "¿Estás seguro de que deseas abandonar el juego?",
+                    icon: "warning",
+                    buttons: ["Cancelar", "Sí, volver"],
+                    dangerMode: true,
+                }).then((willGoBack) => {
+                    if (willGoBack) {
+                        swal("¡Gracias por jugar a Raspa y Gana!", "En una aplicación real, este botón te llevaría al menú principal.", "success");
+                    }
+                });
+            });
+
+            // Función para inicializar el juego
+            function initGame() {
+                updateChipsDisplay();
+                newGameButton.disabled = false;
+                
+                // Mostrar mensaje de bienvenida con SweetAlert
+                swal({
+                    title: "¡Bienvenido a Raspa y Gana!",
+                    text: "Raspa las tarjetas para descubrir premios. Consigue 3 símbolos iguales para ganar.",
+                    icon: "info",
+                    button: "¡Vamos a jugar!",
+                });
+            }
+
+            // Función para actualizar el display de fichas
+            function updateChipsDisplay() {
+                chipsValue.textContent = chips;
+            }
+
+            // Función para iniciar un nuevo juego
+            function startNewGame() {
+                if (chips < scratchPrice) {
+                    swal({
+                        title: "¡Fichas insuficientes!",
+                        text: "No tienes suficientes fichas para jugar. ¿Deseas recargar?",
+                        icon: "error",
+                        buttons: ["Cancelar", "Recargar fichas"],
+                    }).then((willRecharge) => {
+                        if (willRecharge) {
+                            chips = 1000;
+                            updateChipsDisplay();
+                            swal("¡Fichas recargadas!", "Ahora tienes 1000 fichas para jugar.", "success");
+                        }
+                    });
+                    return;
+                }
+                
+                // Cobrar el precio del juego
+                chips -= scratchPrice;
+                updateChipsDisplay();
+                
+                // Reiniciar variables del juego
+                cardsScratched = 0;
+                gameActive = true;
+                revealedPrizes = [];
+                
+                // Limpiar el área de juego
+                scratchArea.innerHTML = '';
+                
+                // Generar las tarjetas de raspe
+                generateScratchCards();
+                
+                // Desactivar el botón de nuevo juego hasta que se terminen de rascar todas las tarjetas
+                newGameButton.disabled = true;
+            }
+
+            // Función para generar las tarjetas de raspe
+            function generateScratchCards() {
+                // Decidir los símbolos para este juego (para garantizar que haya ganadores potenciales)
+                const possibleWinner = Math.random() < 0.7; // 70% de probabilidad de generar un juego con ganador potencial
+                
+                let cardSymbols = [];
+                
+                if (possibleWinner) {
+                    // Seleccionar un símbolo al azar para aparecer 3 veces (ganador)
+                    const winningSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    cardSymbols.push(winningSymbol, winningSymbol, winningSymbol); // 3 del mismo
+                    
+                    // Llenar el resto con símbolos aleatorios
+                    while (cardSymbols.length < 9) {
+                        const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                        // No más de 2 símbolos iguales adicionales
+                        if (cardSymbols.filter(s => s.name === randomSymbol.name).length < 2) {
+                            cardSymbols.push(randomSymbol);
+                        }
+                    }
+                } else {
+                    // Generar símbolos aleatorios sin ganador
+                    while (cardSymbols.length < 9) {
+                        const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                        // No más de 2 símbolos iguales
+                        if (cardSymbols.filter(s => s.name === randomSymbol.name).length < 2) {
+                            cardSymbols.push(randomSymbol);
+                        }
+                    }
+                }
+                
+                // Mezclar los símbolos
+                shuffleArray(cardSymbols);
+                
+                // Crear las 9 tarjetas
+                for (let i = 0; i < 9; i++) {
+                    createScratchCard(cardSymbols[i], i);
+                }
+            }
+
+            // Función para mezclar un array (algoritmo Fisher-Yates)
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // Función para crear una tarjeta de raspe
+            function createScratchCard(symbol, index) {
+                const card = document.createElement('div');
+                card.classList.add('scratch-card');
+                card.dataset.index = index;
+                card.dataset.symbol = symbol.name;
+                
+                // Contenido interno de la tarjeta (lo que se revela)
+                const cardInner = document.createElement('div');
+                cardInner.classList.add('scratch-card-inner');
+                
+                // Contenido del premio
+                const cardContent = document.createElement('div');
+                cardContent.classList.add('scratch-card-content', symbol.class);
+                cardContent.textContent = symbol.emoji;
+                
+                const cardPrize = document.createElement('div');
+                cardPrize.classList.add('scratch-card-prize');
+                cardPrize.textContent = `x${symbol.value}`;
+                
+                // Añadir efecto de brillo
+                const shineEffect = document.createElement('div');
+                shineEffect.classList.add('shine-effect');
+                
+                // Capa de cobertura (la que se raspa)
+                const cardCover = document.createElement('div');
+                cardCover.classList.add('scratch-card-cover');
+                
+                // Construir la estructura de la tarjeta
+                cardInner.appendChild(cardContent);
+                cardInner.appendChild(cardPrize);
+                cardInner.appendChild(shineEffect);
+                
+                card.appendChild(cardInner);
+                card.appendChild(cardCover);
+                
+                // Añadir al área de juego
+                scratchArea.appendChild(card);
+                
+                // Crear el canvas para el efecto de raspe
+                createScratchCanvas(card, symbol);
+            }
+
+            // Función para crear el canvas de raspe en una tarjeta
+            function createScratchCanvas(card, symbol) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Función para ajustar el tamaño del canvas
+                function resizeCanvas() {
+                    const rect = card.getBoundingClientRect();
+                    canvas.width = rect.width;
+                    canvas.height = rect.height;
+                    
+                    // Dibujar el fondo del raspe
+                    ctx.fillStyle = '#ff6b6b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Añadir patrón de líneas
+                    ctx.strokeStyle = '#ff8c8c';
+                    ctx.lineWidth = 2;
+                    
+                    for (let i = 0; i < canvas.width; i += 20) {
+                        ctx.beginPath();
+                        ctx.moveTo(i, 0);
+                        ctx.lineTo(i, canvas.height);
+                        ctx.stroke();
+                    }
+                    
+                    // Añadir texto "RASPA AQUÍ"
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 16px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('RASPA AQUÍ', canvas.width / 2, canvas.height / 2);
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.fillText('RASPA AQUÍ', canvas.width / 2, canvas.height / 2);
+                    ctx.shadowBlur = 0;
+                }
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                
+                card.appendChild(canvas);
+                
+                // Variables para el raspe
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+                let scratchedPercentage = 0;
+                let pixelCount = canvas.width * canvas.height;
+                let scratchedPixels = 0;
+                
+                // Eventos para el raspe con ratón/táctil
+                canvas.addEventListener('mousedown', handleScratchStart);
+                canvas.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    handleScratchStart(e.touches[0]);
+                });
+                
+                canvas.addEventListener('mousemove', handleScratchMove);
+                canvas.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                    handleScratchMove(e.touches[0]);
+                });
+                
+                canvas.addEventListener('mouseup', handleScratchEnd);
+                canvas.addEventListener('touchend', handleScratchEnd);
+                canvas.addEventListener('mouseout', handleScratchEnd);
+                
+                function handleScratchStart(e) {
+                    isDrawing = true;
+                    [lastX, lastY] = getCoordinates(e);
+                }
+                
+                function handleScratchMove(e) {
+                    if (!isDrawing) return;
+                    
+                    const [currentX, currentY] = getCoordinates(e);
+                    
+                    // Dibujar el efecto de raspe (línea transparente)
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineWidth = 40;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+                    
+                    // Actualizar el porcentaje rascado
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    scratchedPixels = 0;
+                    
+                    // Contar píxeles transparentes cada 10 píxeles para optimizar
+                    for (let i = 3; i < imageData.data.length; i += 40) {
+                        if (imageData.data[i] < 50) { // Si es bastante transparente
+                            scratchedPixels++;
+                        }
+                    }
+                    
+                    scratchedPercentage = (scratchedPixels / (pixelCount / 40)) * 100;
+                    
+                    // Si se ha rascado más del 50%, revelar toda la tarjeta
+                    if (scratchedPercentage > 50 && !canvas.dataset.revealed) {
+                        canvas.dataset.revealed = 'true';
+                        revealCard(card, symbol);
+                    }
+                    
+                    [lastX, lastY] = [currentX, currentY];
+                }
+                
+                function handleScratchEnd() {
+                    isDrawing = false;
+                }
+                
+                function getCoordinates(event) {
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    return [
+                        (event.clientX - rect.left) * scaleX,
+                        (event.clientY - rect.top) * scaleY
+                    ];
+                }
+            }
+
+            // Función para revelar una tarjeta completamente
+            function revealCard(card, symbol) {
+                // Encontrar el canvas dentro de la tarjeta y hacerlo transparente
+                const canvas = card.querySelector('canvas');
+                canvas.style.opacity = '0';
+                
+                // Guardar el premio revelado
+                revealedPrizes.push(symbol);
+                
+                // Contar como tarjeta rascada
+                cardsScratched++;
+                
+                // Reproducir sonido o efecto (opcional)
+                playRevealSound();
+                
+                // Si es la última tarjeta, verificar resultados
+                if (cardsScratched === 9) {
+                    setTimeout(checkResults, 500);
+                }
+            }
+
+            // Sonido de revelación (simulado)
+            function playRevealSound() {
+                // En una aplicación real, aquí se reproduciría un sonido
+            }
+
+            // Función para verificar los resultados al final del juego
+            function checkResults() {
+                gameActive = false;
+                newGameButton.disabled = false;
+                
+                // Contar ocurrencias de cada símbolo
+                const symbolCounts = {};
+                revealedPrizes.forEach(symbol => {
+                    symbolCounts[symbol.name] = (symbolCounts[symbol.name] || 0) + 1;
+                });
+                
+                // Verificar si hay tres símbolos iguales
+                let winningSymbol = null;
+                
+                Object.keys(symbolCounts).forEach(name => {
+                    if (symbolCounts[name] >= 3) {
+                        winningSymbol = revealedPrizes.find(s => s.name === name);
+                    }
+                });
+                
+                // Procesar resultado
+                if (winningSymbol) {
+                    // ¡El jugador ganó!
+                    const winAmount = scratchPrice * winningSymbol.value;
+                    chips += winAmount;
+                    updateChipsDisplay();
+                    
+                    // Mostrar mensaje de victoria con SweetAlert
+                    swal({
+                        title: "¡Felicidades! ¡Has ganado!",
+                        text: `Has conseguido 3 símbolos ${winningSymbol.emoji}. Ganas ${winAmount} fichas.`,
+                        icon: "success",
+                        button: "¡Genial!",
+                    });
+                    
+                    // Añadir efecto de destello a las fichas
+                    chipsValue.style.transition = 'color 0.2s';
+                    chipsValue.style.color = 'white';
+                    setTimeout(() => {
+                        chipsValue.style.color = 'var(--gold)';
+                    }, 300);
+                } else {
+                    // El jugador perdió
+                    swal({
+                        title: "¡Casi lo consigues!",
+                        text: "No has encontrado 3 símbolos iguales. ¡Inténtalo de nuevo!",
+                        icon: "info",
+                        button: "Intentar otra vez",
+                    });
+                }
+                
+                // Verificar si el jugador se quedó sin fichas
+                if (chips < scratchPrice) {
+                    setTimeout(() => {
+                        swal({
+                            title: "Fichas insuficientes",
+                            text: "No tienes suficientes fichas para jugar. ¿Deseas recargar?",
+                            icon: "warning",
+                            buttons: ["No, gracias", "Recargar fichas"],
+                        }).then((willRecharge) => {
+                            if (willRecharge) {
+                                chips = 1000;
+                                updateChipsDisplay();
+                                swal("¡Fichas recargadas!", "Ahora tienes 1000 fichas para jugar.", "success");
+                            }
+                        });
+                    }, 1500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
